@@ -1,0 +1,8 @@
+-I
+../nest-libs/linux/glm/include/
+-I
+../nest-libs/linux/SDL2/include/SDL2/
+-I
+../nest-libs/linux/harfbuzz/include
+-I
+../nest-libs/linux/freetype/include

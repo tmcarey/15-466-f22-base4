@@ -2,6 +2,7 @@
 
 #include "Scene.hpp"
 #include "Sound.hpp"
+#include "CustomText.hpp"
 
 #include <glm/glm.hpp>
 
