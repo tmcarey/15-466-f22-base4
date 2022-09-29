@@ -67,10 +67,104 @@ PlayMode::PlayMode() : scene(*hexapod_scene) {
 
 	{
 		std::vector<std::pair<std::string, int>> choices;
-		choices.push_back(std::pair<std::string, int>("Go Left", 1));
+		choices.push_back(std::pair<std::string, int>("GO LEFT", 1));
+		choices.push_back(std::pair<std::string, int>("GO RIGHT", 2));
 
-		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>("You awaken...", choices));
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+					"YOU AND YOUR THREE COMPANIONS HAVE SHARPENED YOUR SWORDS AND TIGHTENED YOUR\n ARMOR. YOU STAND AT THE ENTRANCE OF THE CAVE HEADING INTO THE MOUNTAIN WHERE\n THE DRAGON LIES. "
+"THE TUNNEL BEFORE YOU HAS TWO BRANCHES:\n RIGHT, HEADING UP TOWARD THE PEAK OF THE MOUNTAIN; AND LEFT, CURVING DOWN\n INTO ITS DEPTHS."
+, choices));
 	}
+
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("TIE YOUR ROPE TO A BOULDER AND USE IT TO CLIMB DOWN THE PIT.", 3));
+		choices.push_back(std::pair<std::string, int>("DOUBLE BACK AND TAKE THE OTHER PATH.", 2));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+					"ON THE LEFT PATH, YOU ALL BLUSTER AND JOKE FOR A FEW MINUTES\n, BUT SOON FALL INTO SILENCE, CONCIOUS OF THE STONE ACCUMULATING ABOVE YOU.\n AFTER CONTINUING FOR SOME TIME, SLOWLY BUT STEADILY MAKING YOUR WAY DOWN,\n THE TUNNEL DROPS AWAY TO REVEAL A DARK PIT ABOUT 15 FEET ACROSS.\n"
+
+"AFTER SPENDING A FEW MINUTES DISCUSSING YOUR OPTIONS, THE PARTY DECIDES TO:"
+, choices));
+	}
+
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("ASK THE PARTY", 4));
+		choices.push_back(std::pair<std::string, int>("KEEP GOING", 9));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+					"YOU ALL DECIDE THAT A DRAGON WOULD PROBABLY WANT TO BE\n CLOSER TO THE TOP OF THE MOUNTAIN SO IT COULD FLY, AND\n BEGIN FOLLOWING THE PATH TO THE RIGHT. THE TUNNEL\n TWISTS AND TURNS, AND AT EACH INTERSECTION YOU CHOOSE\n THE PATH HEADING FURTHER UP.\n"
+
+"DON'T YOU THINK YOU'VE SEEN THIS TUNNEL BEFORE?"
+, choices));
+	}
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("CUT THE ROPE", 5));
+		choices.push_back(std::pair<std::string, int>("THIS ISNT A GOOD IDEA", 4));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+					"HAVING DECIDED ON THE MORE ADVENTUROUS OPTION, YOU\n TIE THE ROPE TO THE BOULDER AND WATCH AS THE FIRST\n PERSON STARTS BACKING TOWARD THE PIT,\n FEEDING THE ROPE THROUGH THEIR HANDS.\n"
+
+"YOU'RE STRUCK BY A SUDDEN, OVERWHELMING FEELING."
+, choices));
+	}
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("YOU TRACE YOUR WAY BACK TO WHERE FAINT TRACES OF DAYLIGHT STILL SEEP INTO THE DARK TUNNELS", 0));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+					"YOU STOP MOVING; THE OTHERS NOTICE AND TURN.\n"
+"DON'T YOU THINK, YOU SAY SLOWLY, THAT WE'VE TAKEN A WRONG TURN SOMEWHERE?\n"
+"TO YOUR SURPRISE, THE AGREE WITHOUT HESITATION.\n"
+, choices));
+	}
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("YOU CUT THE ROPE", 6));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+					"AS THE OTHER TWO LEAN OVER THE EDGE, CALLING ENCOURAGEMENT\n TO THE CLIMBER, YOU SLOWLY DRAW YOUR SWORD FROM ITS SHEATH\n AND REST THE BLADE LIGHTLY AGAINST THE TAUT ROPE. DO YOU\n EVEN KNOW THEM? DO THEY MATTER TO YOU AT ALL, HERE\n UNDERNEATH THE DIRT AND STONE?"
+, choices));
+	}
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("GAME OVER", 8));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+					"THEY GASP AS THEY FALL, BUT DON'T SCREAM. THE OTHERS\n STARE INTO THE DARK PIT, FROZEN, UNTIL THE IMPACT ECHOES\n FROM FAR BELOW.\n"
+
+"THEY TURN TO YOU AND DRAW THEIR SWORDS."
+, choices));
+	}
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("GAME OVER", 8));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+					"YOU CARRY ON, THE ONLY SOUND THE CLINK OF YOUR EQUIPMENT.\n THE TUNNELS WIND UP, THEN DOWN, PETERING INTO TIGHT\n PASSAGES THAT WIDEN JUST WHEN YOU'RE\n SURE YOU CAN GO NO FURTHER.\n"
+
+, choices));
+	}
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("RESTART", 0));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+"THE DRAGON YAWNS, AND SETTLES ITSELF MORE COMFORTABLY.\n IT'S A GOOD DAY WHEN ONE'S HOARD GROWS BY FOUR.\n"
+, choices));
+	}
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("YOU CONTINUE ON", 7));
+		choices.push_back(std::pair<std::string, int>("YOU SECOND GUESS YOURSELF", 4));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>(
+"NO, YOU MUST BE MISTAKEN. THIS MOUNTAIN CAN'T BE BIG ENOUGH\n FOR A MAZE OF THIS SIZE; YOU MUST STILL BE ON THE ONLY VIABLE PATH."
+, choices));
+	}
+	
 	
 	currentOptions = decisions[0].second;
 	currentMessage = decisions[0].first;
@@ -100,6 +194,7 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			if(currentOptions.size() > 2){
 				currentMessage = decisions[currentOptions[2].second].first;
 				currentOptions = decisions[currentOptions[2].second].second;
+				currentMessageIdx = 0;
 			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_w) {
@@ -108,6 +203,7 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			if(currentOptions.size() > 0){
 				currentMessage = decisions[currentOptions[0].second].first;
 				currentOptions = decisions[currentOptions[0].second].second;
+				currentMessageIdx = 0;
 			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_s) {
@@ -116,6 +212,7 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			if(currentOptions.size() >1){
 				currentMessage = decisions[currentOptions[1].second].first;
 				currentOptions = decisions[currentOptions[1].second].second;
+				currentMessageIdx = 0;
 			}
 			return true;
 		}
@@ -214,7 +311,7 @@ void PlayMode::update(float elapsed) {
 	down.downs = 0;
 	if(currentMessageIdx < currentMessage.length()){
 		typeTimer += elapsed;
-		if(typeTimer >= 0.1f){
+		if(typeTimer >= 0.01f){
 			typeTimer = 0;
 			currentMessageIdx++;
 			float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -250,12 +347,12 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 	
 
 	glDisable(GL_DEPTH_TEST);
-	CustomText::draw_text(currentMessage.substr(0, currentMessageIdx + 1).c_str(), glm::vec2(400, 600), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-	int currentHeight = 500;
+	CustomText::draw_text(currentMessage.substr(0, currentMessageIdx + 1).c_str(), glm::vec2(100, 600), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+	int currentHeight = 300;
 
 	if(currentMessageIdx == currentMessage.length()){
 		for(auto it = currentOptions.begin(); it < currentOptions.end(); it++){
-			CustomText::draw_text(it->first.c_str(), glm::vec2(400, currentHeight), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+			CustomText::draw_text(it->first.c_str(), glm::vec2(100, currentHeight), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 			currentHeight -= 100;
 		}
 	}

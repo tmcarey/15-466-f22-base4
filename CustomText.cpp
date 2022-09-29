@@ -32,7 +32,7 @@ static Load< void > setup_fontface(LoadTagDefault, [](){
 	ft_error = FT_New_Face (ft_library, fontfile, 0, &ft_face);
 	if (ft_error)
 		abort();
-	ft_error = FT_Set_Pixel_Sizes (ft_face, 0, 72);
+	ft_error = FT_Set_Pixel_Sizes (ft_face, 0, 24);
 	if (ft_error)
 		abort();
 
@@ -119,13 +119,20 @@ CustomText::CharGlyph CustomText::LoadGlyphTexture(unsigned int c){
 	return glyph;
 }
 
-void CustomText::draw_text(const char* text, glm::vec2 position, float scale, glm::vec3 color){	   
+void CustomText::draw_text(const char* intext, glm::vec2 position, float scale, glm::vec3 color){	   
 	glUseProgram(textProgram);
 	glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+	std::string fullText = intext;
+	std::string remaining("");
+	std::string nextText = fullText;
+	auto nextLineBreak = fullText.find('\n');
+	if(nextLineBreak != std::string::npos){	
+		remaining = fullText.substr(nextLineBreak + 1);
+		nextText = fullText.substr(0, nextLineBreak);
+	}
 	GLuint matrix = glGetUniformLocation(CustomText::textProgram, "projection");
 	glm::mat4 ourProj = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);
 	glUniformMatrix4fv(matrix, 1, GL_FALSE, glm::value_ptr(ourProj));
@@ -139,7 +146,7 @@ void CustomText::draw_text(const char* text, glm::vec2 position, float scale, gl
 	/* Create hb-buffer and populate. */
 	hb_buffer_t *hb_buffer;
 	hb_buffer = hb_buffer_create ();
-	hb_buffer_add_utf8 (hb_buffer, text, -1, 0, -1);
+	hb_buffer_add_utf8 (hb_buffer, nextText.c_str(), -1, 0, -1);
 	hb_buffer_guess_segment_properties (hb_buffer);
 
 	/* Shape it! */
@@ -188,4 +195,8 @@ void CustomText::draw_text(const char* text, glm::vec2 position, float scale, gl
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	if(remaining.length() > 0){	
+		draw_text(remaining.c_str(), position + glm::vec2(0, -50), scale, color);
+	}
 }

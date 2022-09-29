@@ -1,12 +1,12 @@
-# (TODO: your game's title)
+# Cave Story
 
-Author: (TODO: your name)
+Author: Thomas Carey (tcarey)
 
-Design: (TODO: In two sentences or fewer, describe what is new and interesting about your game.)
+Design: Custom Text Rnderer, branching story.
 
-Text Drawing: (TODO: how does the text drawing in this game work? Is text precomputed? Rendered at runtime? What files or utilities are involved?)
+Text Drawing: Text is entirely rendered at runtime. Random typewriter sounds are added as text is typed out.
 
-Choices: (TODO: how does the game store choices and narrative? How are they authored? Anything nifty you want to point out?)
+Choices: Choices are contained in one large simple data structure that I could easily copy and paste between.
 
 Screen Shot:
 
@@ -14,9 +14,9 @@ Screen Shot:
 
 How To Play:
 
-(TODO: describe the controls and (if needed) goals/strategy.)
+W, S, X for options 1, 2, 3 respectively.
 
-Sources: (TODO: list a source URL for any assets you did not create yourself. Make sure you have a license for the asset.)
+Sources: The font: https://www.dafont.com/jmh-typewriter.font
 
 This game was built with [NEST](NEST.md).
 
