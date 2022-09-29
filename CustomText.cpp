@@ -7,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "data_path.hpp"
 
 FT_Face CustomText::font_face;
 unsigned int CustomText::textProgram;
@@ -20,7 +21,7 @@ std::map<unsigned int, CustomText::CharGlyph> CustomText::glyphMap;
 
 static Load< void > setup_fontface(LoadTagDefault, [](){
 	const char *fontfile;
-	fontfile = "font.otf";
+	fontfile = data_path("font.otf").c_str();
 
 	/* Initialize FreeType and create FreeType font face. */
 	FT_Library ft_library;
