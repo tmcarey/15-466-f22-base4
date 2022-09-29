@@ -18,6 +18,17 @@ struct PlayMode : Mode {
 	virtual void update(float elapsed) override;
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
+	std::string currentMessage;
+	std::vector<std::pair<std::string, int>> currentOptions;
+	int currentMessageIdx;
+	float typeTimer;
+	std::vector<std::pair<std::string, std::vector<std::pair<std::string, int>>>> decisions;
+
+	enum GameScene {
+		Intro
+	};
+	GameScene currentScene;
+
 	//----- game state -----
 
 	//input tracking:

@@ -4,7 +4,7 @@
 #include <map>
 
 struct CustomText{
-	static void draw_text(float x, float y, float scale, glm::vec3 color);
+	static void draw_text(const char* text, glm::vec2 position, float scale, glm::vec3 color);
 	struct CharGlyph {
 		unsigned int texId;
 		float height;

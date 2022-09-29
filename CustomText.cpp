@@ -1,13 +1,22 @@
 #include "CustomText.hpp"
+#include "GL.hpp"
 #include "Load.hpp"
+#include "freetype/freetype.h"
 #include "gl_compile_program.hpp"
 #include "gl_errors.hpp"
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 FT_Face CustomText::font_face;
 unsigned int CustomText::textProgram;
 unsigned int CustomText::VAO;
 unsigned int CustomText::VBO;
 std::map<unsigned int, CustomText::CharGlyph> CustomText::glyphMap;
+
+// External code sources: Mostly cobbled together from
+// https://learnopengl.com/In-Practice/Text-Rendering
+// and https://github.com/harfbuzz/harfbuzz-tutorial/blob/master/hello-harfbuzz-freetype.c
 
 static Load< void > setup_fontface(LoadTagDefault, [](){
 	const char *fontfile;
@@ -17,14 +26,13 @@ static Load< void > setup_fontface(LoadTagDefault, [](){
 	FT_Library ft_library;
 	FT_Face ft_face;
 	FT_Error ft_error;
-	int FONT_SIZE = 12;
 	ft_error = FT_Init_FreeType (&ft_library);
 	if (ft_error)
 		abort();
 	ft_error = FT_New_Face (ft_library, fontfile, 0, &ft_face);
 	if (ft_error)
 		abort();
-	ft_error = FT_Set_Char_Size (ft_face, FONT_SIZE*64, FONT_SIZE*64, 0, 0);
+	ft_error = FT_Set_Pixel_Sizes (ft_face, 0, 72);
 	if (ft_error)
 		abort();
 
@@ -50,11 +58,11 @@ static Load< void > setup_fontface(LoadTagDefault, [](){
 			"void main()\n"
 			"{\n"
 				"vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n"
-				"color = vec4(textColor, 1.0) * sampled;\n"
+				"color = vec4(1.0) * sampled;\n"
 			"}\n"
 			);
-	printf("Compiled Shadres\n");
 
+	glUseProgram(CustomText::textProgram);
 	glGenVertexArrays(1, &CustomText::VAO);
 	glGenBuffers(1, &CustomText::VBO);
 	glBindVertexArray(CustomText::VAO);
@@ -73,14 +81,14 @@ CustomText::CharGlyph CustomText::LoadGlyphTexture(unsigned int c){
 	auto found = glyphMap.find(c);
 	if(found != glyphMap.end())
 		return found->second;
-	printf("Loading glyph %d\n", c);
 
 	// load character glyph 
-    if (FT_Load_Char(font_face, c, FT_LOAD_RENDER))
+    if (FT_Load_Glyph(font_face, c, FT_LOAD_RENDER))
     {
         std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
         return CustomText::CharGlyph();
     }
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     // generate texture
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -104,19 +112,25 @@ CustomText::CharGlyph CustomText::LoadGlyphTexture(unsigned int c){
     // now store character for later use
 	CharGlyph glyph;
 	glyph.texId = texture;
-	glyph.height = (float)font_face->glyph->bitmap.width;
-	glyph.width = (float)font_face->glyph->bitmap.rows;
+	glyph.height = (float)font_face->glyph->bitmap.rows;
+	glyph.width = (float)font_face->glyph->bitmap.width;
     glyphMap.insert(std::pair<unsigned int, CharGlyph>(c, glyph));
 	
 	return glyph;
 }
 
-void CustomText::draw_text(float x, float y, float scale, glm::vec3 color){	
-	const char* text = "Hello World";
+void CustomText::draw_text(const char* text, glm::vec2 position, float scale, glm::vec3 color){	   
 	glUseProgram(textProgram);
 	glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
+	GLuint matrix = glGetUniformLocation(CustomText::textProgram, "projection");
+	glm::mat4 ourProj = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);
+	glUniformMatrix4fv(matrix, 1, GL_FALSE, glm::value_ptr(ourProj));
+	GLuint textColor = glGetUniformLocation(CustomText::textProgram, "textColor");
+	glUniform3fv(textColor, 1, glm::value_ptr(color));
 
 	/* Create hb-ft font. */
 	hb_font_t *hb_font;
@@ -135,6 +149,10 @@ void CustomText::draw_text(float x, float y, float scale, glm::vec3 color){
 	unsigned int len = hb_buffer_get_length (hb_buffer);
 	hb_glyph_info_t *info = hb_buffer_get_glyph_infos (hb_buffer, NULL);
 	hb_glyph_position_t *pos = hb_buffer_get_glyph_positions (hb_buffer, NULL);
+
+
+	float x = position.x;
+	float y = position.y;
 
 	for(unsigned int i = 0; i < len; i++){
 		CharGlyph glyph = LoadGlyphTexture(info[i].codepoint);
@@ -158,6 +176,7 @@ void CustomText::draw_text(float x, float y, float scale, glm::vec3 color){
         // render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, glyph.texId);
         // update content of VBO memory
+		glUniform1i(glGetUniformLocation(textProgram, "text"), 0);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
         glBindBuffer(GL_ARRAY_BUFFER, 0);

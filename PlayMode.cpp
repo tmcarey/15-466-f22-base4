@@ -36,8 +36,14 @@ Load< Scene > hexapod_scene(LoadTagDefault, []() -> Scene const * {
 	});
 });
 
-Load< Sound::Sample > dusty_floor_sample(LoadTagDefault, []() -> Sound::Sample const * {
-	return new Sound::Sample(data_path("dusty-floor.opus"));
+Load< Sound::Sample > key1(LoadTagDefault, []() -> Sound::Sample const * {
+	return new Sound::Sample(data_path("key1.opus"));
+});
+Load< Sound::Sample > key2(LoadTagDefault, []() -> Sound::Sample const * {
+	return new Sound::Sample(data_path("key2.opus"));
+});
+Load< Sound::Sample > key3(LoadTagDefault, []() -> Sound::Sample const * {
+	return new Sound::Sample(data_path("key3.opus"));
 });
 
 PlayMode::PlayMode() : scene(*hexapod_scene) {
@@ -59,9 +65,20 @@ PlayMode::PlayMode() : scene(*hexapod_scene) {
 	if (scene.cameras.size() != 1) throw std::runtime_error("Expecting scene to have exactly one camera, but it has " + std::to_string(scene.cameras.size()));
 	camera = &scene.cameras.front();
 
+	{
+		std::vector<std::pair<std::string, int>> choices;
+		choices.push_back(std::pair<std::string, int>("Go Left", 1));
+
+		decisions.push_back(std::pair<std::string, std::vector<std::pair<std::string, int>>>("You awaken...", choices));
+	}
+	
+	currentOptions = decisions[0].second;
+	currentMessage = decisions[0].first;
+	currentMessageIdx = 0;
 	//start music loop playing:
+	//
 	// (note: position will be over-ridden in update())
-	leg_tip_loop = Sound::loop_3D(*dusty_floor_sample, 1.0f, get_leg_tip_position(), 10.0f);
+	/* leg_tip_loop = Sound::loop_3D(*dusty_floor_sample, 1.0f, get_leg_tip_position(), 10.0f); */
 }
 
 PlayMode::~PlayMode() {
@@ -77,17 +94,29 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 			left.downs += 1;
 			left.pressed = true;
 			return true;
-		} else if (evt.key.keysym.sym == SDLK_d) {
+		} else if (evt.key.keysym.sym == SDLK_x) {
 			right.downs += 1;
 			right.pressed = true;
+			if(currentOptions.size() > 2){
+				currentMessage = decisions[currentOptions[2].second].first;
+				currentOptions = decisions[currentOptions[2].second].second;
+			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_w) {
 			up.downs += 1;
 			up.pressed = true;
+			if(currentOptions.size() > 0){
+				currentMessage = decisions[currentOptions[0].second].first;
+				currentOptions = decisions[currentOptions[0].second].second;
+			}
 			return true;
 		} else if (evt.key.keysym.sym == SDLK_s) {
 			down.downs += 1;
 			down.pressed = true;
+			if(currentOptions.size() >1){
+				currentMessage = decisions[currentOptions[1].second].first;
+				currentOptions = decisions[currentOptions[1].second].second;
+			}
 			return true;
 		}
 	} else if (evt.type == SDL_KEYUP) {
@@ -147,7 +176,7 @@ void PlayMode::update(float elapsed) {
 	);
 
 	//move sound to follow leg tip position:
-	leg_tip_loop->set_position(get_leg_tip_position(), 1.0f / 60.0f);
+	/* leg_tip_loop->set_position(get_leg_tip_position(), 1.0f / 60.0f); */
 
 	//move camera:
 	{
@@ -183,6 +212,21 @@ void PlayMode::update(float elapsed) {
 	right.downs = 0;
 	up.downs = 0;
 	down.downs = 0;
+	if(currentMessageIdx < currentMessage.length()){
+		typeTimer += elapsed;
+		if(typeTimer >= 0.1f){
+			typeTimer = 0;
+			currentMessageIdx++;
+			float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			if(r < 0.3f){
+				Sound::play(*key1, 1.0f);
+			}else if(r < 0.6f){
+				Sound::play(*key2, 1.0f);
+			}else{
+				Sound::play(*key3, 1.0f);
+			}
+		}
+	}
 }
 
 void PlayMode::draw(glm::uvec2 const &drawable_size) {
@@ -205,31 +249,16 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 	glDepthFunc(GL_LESS); //this is the default depth comparison function, but FYI you can change it.
 	
 
-	/* scene.draw(*camera); */
+	glDisable(GL_DEPTH_TEST);
+	CustomText::draw_text(currentMessage.substr(0, currentMessageIdx + 1).c_str(), glm::vec2(400, 600), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+	int currentHeight = 500;
 
-	/* { //use DrawLines to overlay some text: */
-	/* 	glDisable(GL_DEPTH_TEST); */
-	/* 	float aspect = float(drawable_size.x) / float(drawable_size.y); */
-	/* 	DrawLines lines(glm::mat4( */
-	/* 		1.0f / aspect, 0.0f, 0.0f, 0.0f, */
-	/* 		0.0f, 1.0f, 0.0f, 0.0f, */
-	/* 		0.0f, 0.0f, 1.0f, 0.0f, */
-	/* 		0.0f, 0.0f, 0.0f, 1.0f */
-	/* 	)); */
-
-	/* 	constexpr float H = 0.09f; */
-	/* 	lines.draw_text("Mouse motion rotates camera; WASD moves; escape ungrabs mouse", */
-	/* 		glm::vec3(-aspect + 0.1f * H, -1.0 + 0.1f * H, 0.0), */
-	/* 		glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f), */
-	/* 		glm::u8vec4(0x00, 0x00, 0x00, 0x00)); */
-	/* 	float ofs = 2.0f / drawable_size.y; */
-	/* 	lines.draw_text("Mouse motion rotates camera; WASD moves; escape ungrabs mouse", */
-	/* 		glm::vec3(-aspect + 0.1f * H + ofs, -1.0 + + 0.1f * H + ofs, 0.0), */
-	/* 		glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f), */
-	/* 		glm::u8vec4(0xff, 0xff, 0xff, 0x00)); */
-	/* } */
-
-	CustomText::draw_text(100.0f, 100.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+	if(currentMessageIdx == currentMessage.length()){
+		for(auto it = currentOptions.begin(); it < currentOptions.end(); it++){
+			CustomText::draw_text(it->first.c_str(), glm::vec2(400, currentHeight), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+			currentHeight -= 100;
+		}
+	}
 	GL_ERRORS();
 }
 
